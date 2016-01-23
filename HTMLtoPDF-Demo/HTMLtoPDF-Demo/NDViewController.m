@@ -38,15 +38,35 @@
 - (IBAction)generatePDFUsingBlocks:(id)sender
 {
     self.resultLabel.text = @"loading...";
+
+    // Download an image into a UIImage*
+    NSURL *imageURL = [NSURL URLWithString:@"http://thumbs.media.smithsonianmag.com//filer/b9/d2/b9d271f3-7f66-4132-b5af-7d33844505b7/goat.jpg__800x600_q85_crop.jpg"];
+    NSLog(@"Image URL: %@",imageURL);
+    NSData *imageData = [NSData dataWithContentsOfURL:imageURL];
+    //NSLog(@"Image data: %@",imageData);
+    UIImage *image = [UIImage imageWithData:imageData];
+    NSLog(@"Image object: %@",image);
+    
+    // Save the image to a file
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory,NSUserDomainMask, YES);
+    NSString *filePath = [[paths objectAtIndex:0] stringByAppendingPathComponent:@"Image.png"];
+    [UIImagePNGRepresentation(image) writeToFile:filePath atomically:YES];
+    NSLog(@"Image saved to file: %@",filePath);
+    
+    NSURL* localImageURL = [NSURL fileURLWithPath:filePath];
+    NSLog(@"Local image URL: %@",localImageURL);
+    
+    // Prepare the HTML
     NSMutableString* html =  [NSMutableString stringWithCapacity:512];
     [html appendString:@"<!DOCTYPE html><html><head><style>body { font-family: 'Helvetica', 'Arial', sans-serif; } table, th, td { border: 1px solid black; border-collapse: collapse; } th, td { padding: 5px; } </style></head>"];
     [html appendString:@"<body><H1>A List of Things</H1>"];
     [html appendString:@"<table style='width:100%'>"];
     
     // Add table items
-    [html appendString:@"<tr> <th>First</td> <th>Last</td> <th>Type</td> </tr>"];
-    [html appendString:@"<tr> <td>foo</td> <td>bar</td> <td>xyz</td> </tr>"];
-    [html appendString:@"<tr> <td>123</td> <td>abc</td> <td>def</td> </tr>"];
+    [html appendString:@"<tr> <th>First</td> <th>Last</td> <th>Type</td> <th>Image</th> </tr>"];
+    
+    [html appendString:[NSString stringWithFormat:@"<tr> <td>foo</td> <td>bar</td> <td>xyz</td> <td align='center'><img src='%@' height='42' width='42'></td> </tr>",localImageURL]];
+    [html appendString:[NSString stringWithFormat:@"<tr> <td>123</td> <td>abc</td> <td>def</td> <td align='center'><img src='%@' height='42' width='42'></td> </tr>",localImageURL]];
     
     [html appendString:@"</table>"];
     [html appendString:@"</body></html>"];
