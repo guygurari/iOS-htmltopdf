@@ -75,6 +75,10 @@
         NSString *result = [NSString stringWithFormat:@"HTMLtoPDF did succeed (%@ / %@)", htmlToPDF, htmlToPDF.PDFpath];
         NSLog(@"%@",result);
         self.resultLabel.text = result;
+
+        // Delete the image file
+        NSError* error;
+        [[NSFileManager defaultManager] removeItemAtPath:filePath error:&error];
     } errorBlock:^(NDHTMLtoPDF *htmlToPDF) {
         NSString *result = [NSString stringWithFormat:@"HTMLtoPDF did fail (%@)", htmlToPDF];
         NSLog(@"%@",result);
